@@ -1,23 +1,32 @@
-// import { images } from './images.js';
+import { images } from './images.js';
 
-// const gallery = document.querySelector('.gallery');
-// const markup = images
-//     .map((image) => `  <li class="gallery__item">
-//                         <a class="gallery__link" href="${image.original}">
-//                             <img class="gallery__image" src="${image.preview}" alt="${image.description}" />
-//                         </a>
-//                     </li>`
-//   )
-//     .join("");
-  
-// gallery.insertAdjacentHTML("afterbegin", markup);
+const el = (tag, props) => Object.assign(document.createElement(tag), props);
 
-// const lightbox = new SimpleLightbox('.gallery__link', {
-//     captionsData: "alt",
-//     captionDelay: 250,
-// });
+const createModal = ({ original, description }) =>
+    `<img class="${"lightbox-gallery-image"}" src="${original}" alt="${description}"/>`
 
-// console.log(images);
+const createGalleryItem = ({ preview, original, description }) => {
+    const li = el("li", { className: "gallery-item" });
+    
+    const a = el("a", { className: "gallery-link", href: original });
+    
+    const img = el("img", { className: "gallery-image", src: preview, alt: description });
+    img.dataset["source"] = original;
 
 
-// do poprawy
+    const lightbox = basicLightbox.create(createModal({ original, description }));
+
+    a.addEventListener("click", (event) => {
+        event.preventDefault();
+        lightbox.show();
+    });
+
+    a.append(img);
+    li.append(a);
+    return li;
+};
+
+const galleryItems = images.map(createGalleryItem);
+const gallery = document.querySelector("ul.gallery");
+
+gallery.append(...galleryItems);
